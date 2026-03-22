@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Practical – Genetic Algorithms for 0/1 Knapsack (A4)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  @page { size: A4; margin: 14mm; }
+  *, *::before, *::after { box-sizing: border-box; }
+  html,body{background:#f1f5f9;}
+  body{margin:0}
+  .page{width:210mm; min-height:297mm; margin:0 auto; background:#fff; color:#0f172a;
+        font:16px/1.62 system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        box-shadow:0 10px 32px rgba(2,6,23,.08);}
+  .content{padding:16mm 14mm 18mm;}
+  h1{font-size:28px; margin:0 0 8px;}
+  h2{font-size:22px; margin:40px 0 8px; border-left:6px solid #db870a; padding-left:10px;}
+  h3{font-size:18px; margin:14px 0 6px;}
+  p,li{font-size:15px;}
+  hr.divider {
+    border: none;
+    border-top: 3px solid #333;
+    width: 100%;
+    margin: 20px auto;
+  }
+  code,kbd,pre{background:#f1f5f9; border:1px solid #e2e8f0; padding:.2rem .45rem; border-radius:6px; font-family:ui-monospace, SFMono-Regular, Consolas, Menlo, monospace;}
+  pre{padding:12px 14px; overflow:auto; max-width:100%; white-space:pre-wrap; word-break:break-word;}
+  .callout{border:1px solid #e2e8f0; background:#f8fafc; border-left:6px solid #2563eb; border-radius:10px; padding:12px 14px; margin:10px 0;}
+  .note{border-left-color:#7c3aed;}
+  .warn{border-left-color:#f59e0b;}
+  .ok{border-left-color:#16a34a;}
+  .muted{color:#475569}
+  .small{font-size:13px; color:#475569}
+  .grid{display:grid; gap:16px;}
+  .two{grid-template-columns:1fr 1fr;}
+  table{width:100%; border-collapse:collapse; margin:8px 0 14px; font-size:14.5px;}
+  th,td{border:1px solid #e2e8f0; padding:7px 8px; text-align:center; vertical-align:middle;}
+  th{background:#eef2ff;}
+  .pill{display:inline-block; padding:2px 8px; border:1px solid #cbd5e1; border-radius:999px; background:#f1f5f9; color:#0f172a; font-size:12.5px; font-weight:700;}
+  .rubric td:first-child{font-weight:600; text-align:left;}
+  .btn{padding:6px 10px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; cursor:pointer;}
+  .btn:hover{background:#eef2ff;}
+  .tip{font-size:13px; color:#334155}
+  .kbd{border:1px solid #cbd5e1; background:#f8fafc; padding:0 6px; border-radius:6px}
+  @media print {.btn{display:none}}
+</style>
+</head>
+<body>
+<div class="page"><div class="content">
+
+  <h1>Practical — Genetic Algorithms for 0/1 Knapsack</h1>
+  <p class="muted">Time: 1h 30m in-lab (+ optional extensions). Marks: 10% of module.</p>
+
+  <div class="callout">
+    <strong>Learning goals</strong>
+    <ul>
+      <li>Load a standard <b>0/1 knapsack</b> instance and encode it for a GA.</li>
+      <li>Use a GA library (<b>DEAP</b>, <b>PyGAD</b>, or <b>pymoo</b>) to build a working solver.</li>
+      <li>Compare <b>selection</b>, <b>crossover</b>, <b>mutation</b>, and <b>parameter</b> choices with fair runs.</li>
+      <li>Analyze convergence (best/avg fitness vs generations) and discuss results.</li>
+    </ul>
+  </div>
+<hr class="divider" />
+  <h2>0) Setup (5 min)</h2>
+  <p>Make a new virtual environment and install one of the GA libraries below (choose <b>one</b>):</p>
+  <pre># create & activate venv (any method you prefer)
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# macOS/Linux
+source .venv/bin/activate
+
+# Install ONE library:
+pip install deap           # DEAP :contentReference[oaicite:0]{index=0}
+# or
+pip install pygad          # PyGAD :contentReference[oaicite:1]{index=1}
+# or
+pip install pymoo          # pymoo :contentReference[oaicite:2]{index=2}</pre>
+
+  <div class="callout note">
+    <strong>Starter docs</strong>:
+    <ul>
+      <li>DEAP docs & examples: <code>https://deap.readthedocs.io/</code> (toolbox, algorithms, examples). :contentReference[oaicite:3]{index=3}</li>
+      <li>PyGAD docs: <code>https://pygad.readthedocs.io/</code> (parameters, operators). :contentReference[oaicite:4]{index=4}</li>
+      <li>pymoo GA / NSGA-II: <code>https://pymoo.org/</code> (algorithms & customization). :contentReference[oaicite:5]{index=5}</li>
+    </ul>
+  </div>
+<hr class="divider" />
+  <h2>1) Dataset (10 min)</h2>
+  <p>Use one standard knapsack instance set (pick one):</p>
+  <ul>
+    <li><b>OR-Library</b> 0/1 & multidimensional knapsack (Beasley). Datasets + format notes. <code>people.brunel.ac.uk/~mastjjb/jeb/orlib/</code> :contentReference[oaicite:6]{index=6}</li>
+    <li><b>Pisinger</b> generator/instances for hard 0/1 KP. <code>hjemmesider.diku.dk/~pisinger/codes.html</code> :contentReference[oaicite:7]{index=7}</li>
+    <li>Alternative mirrors/collections (e.g., MKP bundles). :contentReference[oaicite:8]{index=8}</li>
+  </ul>
+
+  <div class="callout">
+    <strong>Recommended starter instance</strong>: OR-Library <b>0/1 KP</b> with ~100 items (moderate size). Record:
+    <ul>
+      <li><b>n</b> (items), <b>C</b> (capacity), vectors <b>w</b> (weights), <b>v</b> (values).</li>
+      <li>If format is CSV/TXT, write a small loader that returns <code>(v, w, C)</code>.</li>
+    </ul>
+  </div>
+<hr class="divider" />
+  <h2>2) GA design (10 min)</h2>
+  <p>Binary encoding: chromosome is a length-<b>n</b> bitstring where 1 = take item. Fitness (choose one):</p>
+    <div class="callout">
+      <h3>Hard penalty</h3>
+      <pre>fitness(x) = value(x) − M · max(0, weight(x) − C)</pre>
+      <p class="small">Use large <b>M</b> (e.g., 10×max(v)). Enforces feasibility strongly.</p>
+    </div>
+    <div class="callout">
+      <h3>Soft penalty</h3>
+      <pre>fitness(x) = value(x) / (1 + max(0, weight(x) − C))</pre>
+      <p class="small">Keeps overweight individuals in play (helps roulette/diversity).</p>
+    </div>
+
+  <h3>Operators (pick sets to compare)</h3>
+  <ul>
+    <li><b>Selection</b>: tournament(<i>k</i>), roulette, rank, truncation.</li>
+    <li><b>Crossover</b>: 1-point, 2-point, uniform (rate <i>p<sub>c</sub></i>).</li>
+    <li><b>Mutation</b>: bit-flip (rate <i>p<sub>m</sub></i> per gene).</li>
+    <li><b>Elitism</b>: copy top <i>E</i> to next generation.</li>
+  </ul>
+<hr class="divider" />
+  <h2>3) Minimal scaffolds (choose ONE library)</h2>
+
+  <h3>3A) DEAP scaffold</h3>
+  <pre># deap_ga.py
+import random
+from deap import base, creator, tools, algorithms  # :contentReference[oaicite:9]{index=9}
+
+def load_instance(...):
+    # TODO: read v,w,C (lists of length n, and capacity)
+    return v, w, C
+
+def make_fitness(v, w, C, hard=True, M=1000):
+    def fitness(ind):
+        val = sum(g*vi for g,vi in zip(ind, v))
+        wt  = sum(g*wi for g,wi in zip(ind, w))
+        of  = max(0, wt - C)
+        return (val - M*of,) if hard else (val / (1+of),)
+    return fitness
+
+def build_toolbox(n, fitness_fn, pc=0.9, pm=0.02, tourn_k=3):
+    creator.create("FitnessMax", base.Fitness, weights=(1.0,))
+    creator.create("Individual", list, fitness=creator.FitnessMax)
+
+    tb = base.Toolbox()
+    tb.register("attr_bool", random.randint, 0, 1)
+    tb.register("individual", tools.initRepeat, creator.Individual, tb.attr_bool, n=n)
+    tb.register("population", tools.initRepeat, list, tb.individual)
+    tb.register("evaluate", fitness_fn)
+    tb.register("mate", tools.cxTwoPoint)
+    tb.register("mutate", tools.mutFlipBit, indpb=pm)
+    tb.register("select", tools.selTournament, tournsize=tourn_k)
+    return tb
+
+def run(v, w, C, gens=200, pop_size=150, **ops):
+    tb = build_toolbox(len(v), make_fitness(v,w,C, hard=True, M=10*max(v)), **ops)
+    pop = tb.population(n=pop_size)
+    hof = tools.HallOfFame(1)
+    stats = tools.Statistics(lambda ind: ind.fitness.values[0])
+    stats.register("avg", lambda s: sum(s)/len(s))
+    stats.register("max", max)
+    algorithms.eaSimple(pop, tb, cxpb=ops.get("pc",0.9), mutpb=ops.get("pm",0.02),
+                        ngen=gens, stats=stats, halloffame=hof, verbose=False)
+    return hof[0], hof[0].fitness.values[0]
+</pre>
+
+  <h3>3B) PyGAD scaffold</h3>
+  <pre># pygad_ga.py
+import numpy as np, pygad  # :contentReference[oaicite:10]{index=10}
+
+def load_instance(...): ...
+def fitness_func(solution, solution_idx):
+    val = np.dot(solution, v); wt = np.dot(solution, w)
+    of  = max(0, wt - C)
+    return float(val - 1000*of)  # or soft penalty
+
+ga = pygad.GA(num_generations=200, sol_per_pop=150, num_parents_mating=60,
+              fitness_func=fitness_func, num_genes=len(v),
+              init_range_low=0, init_range_high=1, gene_type=int,
+              parent_selection_type="tournament",  # or "rws", "rank"
+              crossover_type="single_point", mutation_type="random",
+              mutation_probability=0.02)
+ga.run()
+best, best_fit, _ = ga.best_solution()</pre>
+
+  <h3>3C) pymoo scaffold</h3>
+  <pre># pymoo_ga.py
+import numpy as np
+from pymoo.core.problem import Problem
+from pymoo.algorithms.soo.nonconvex.ga import GA     # :contentReference[oaicite:11]{index=11}
+from pymoo.optimize import minimize
+from pymoo.core.sampling import Sampling
+from pymoo.core.crossover import Crossover
+from pymoo.core.mutation import Mutation
+
+class KP(Problem):
+    def __init__(self, v, w, C):
+        super().__init__(n_var=len(v), n_obj=1, n_constr=0, xl=0, xu=1, type_var=bool)
+        self.v, self.w, self.C = np.array(v), np.array(w), C
+    def _evaluate(self, X, out, *args, **kwargs):
+        W = X @ self.w; V = X @ self.v
+        of = np.maximum(0, W - self.C)
+        f  = -(V - 1000*of)          # pymoo minimizes → negate
+        out["F"] = f.reshape((-1,1))
+
+problem = KP(v, w, C)
+algorithm = GA(pop_size=150)         # customize operators if desired
+res = minimize(problem, algorithm, ("n_gen", 200), seed=42, verbose=False)
+best_x = res.X; best_fit = -res.F[0]</pre>
+
+  <div class="callout ok">
+    <strong>Tip</strong>: fix <b>random seeds</b> when comparing operators (DEAP: <code>random.seed(…)</code>, PyGAD: <code>random_seed</code> in GA, pymoo: argument <code>seed</code>).
+  </div>
+<hr class="divider" />
+  <h2>4) Experiments (45–55 min)</h2>
+
+  <h3>A. Baseline (10–15 min)</h3>
+  <ul>
+    <li>Start with: tournament <b>k=3</b>, 2-point crossover (<b>p<sub>c</sub>=0.9</b>), bit-flip (<b>p<sub>m</sub>=0.02</b>), elitism <b>E=2</b>, <b>gens=200</b>, <b>pop=150</b>.</li>
+    <li>Log per-generation <b>best</b> and <b>average</b> fitness; plot if possible.</li>
+  </ul>
+
+  <h3>B. Operator comparison (15–20 min)</h3>
+  <p>Hold everything else constant; change one thing at a time.</p>
+  <ul>
+    <li><b>Selection:</b> tournament <i>k</i> ∈ {2, 4}, roulette, rank.</li>
+    <li><b>Crossover:</b> 1-point vs 2-point vs uniform.</li>
+    <li><b>Mutation rate:</b> <i>p<sub>m</sub></i> ∈ {0.01, 0.05, 0.1}.</li>
+  </ul>
+  <p>For each variant, record final best fitness and convergence speed (generations to surpass baseline’s median fitness).</p>
+
+  <h3>C. (Optional) Harder instances (10–15 min)</h3>
+  <ul>
+    <li>Try a larger OR-Library instance (~250–500 items) or a “hard” Pisinger instance; note differences in convergence. :contentReference[oaicite:12]{index=12}</li>
+  </ul>
+<hr class="divider" />
+  <h2>5) What to submit (single PDF + code)</h2>
+  <ul>
+    <li><b>PDF report</b> (2–3 pages): problem summary; GA design; plots of best/avg; tables comparing operators; discussion.</li>
+    <li><b>Code</b>: your single <code>.py</code> (or notebook) used to run all experiments + a short <code>README.md</code> to reproduce results.</li>
+  </ul>
+
+  <h3>Suggested report tables</h3>
+  <table>
+    <thead><tr><th>Variant</th><th>Best fitness (mean±sd)</th><th>Gens to reach baseline median</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Baseline (k=3, 2pt, pm=0.02)</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>Tournament k=2</td><td>—</td><td>—</td><td>less pressure</td></tr>
+      <tr><td>Uniform crossover</td><td>—</td><td>—</td><td>diversity trade-off</td></tr>
+      <tr><td>pm = 0.10</td><td>—</td><td>—</td><td>risk of randomization</td></tr>
+    </tbody>
+  </table>
+<hr class="divider" />
+  <h2>6) Marking rubric (10%)</h2>
+  <table class="rubric">
+    <thead><tr><th>Criteria</th><th>Marks</th></tr></thead>
+    <tbody>
+      <tr><td>Correct GA implementation with chosen library; reproducible run</td><td>3</td></tr>
+      <tr><td>Well-designed baseline & at least two fair comparisons (operator/param)</td><td>3</td></tr>
+      <tr><td>Clear plots/tables; good experimental notes (seeds, settings)</td><td>2</td></tr>
+      <tr><td>Insightful analysis (pressure vs diversity; convergence)</td><td>2</td></tr>
+      <tr><td><b>Total</b></td><td><b>10</b></td></tr>
+    </tbody>
+  </table>
+<hr class="divider" />
+  <h2>7) Appendix — Tiny plotting helper (optional)</h2>
+  <pre># utils_plot.py
+import matplotlib.pyplot as plt
+
+def plot_history(best, avg, title="GA run"):
+    plt.figure()
+    plt.plot(best, label="best")
+    plt.plot(avg, label="avg")
+    plt.xlabel("Generation"); plt.ylabel("Fitness"); plt.title(title); plt.legend()
+    plt.tight_layout(); plt.show()</pre>
+
+  <div class="callout warn">
+    <strong>Academic integrity</strong>
+    <ul>
+      <li>Use your own code and experiments. Cite any external snippets (with link + comment).</li>
+      <li>Record random seeds in the report for reproducibility.</li>
+    </ul>
+  </div>
+
+  <p class="small muted">References & resources: OR-Library datasets; Pisinger generator & papers; DEAP, PyGAD, pymoo documentation and examples. :contentReference[oaicite:13]{index=13}</p>
+
+  <button class="btn" onclick="window.print()">🖨️ Print / Export PDF</button>
+
+</div></div>
+</body>
+</html>
