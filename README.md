@@ -303,26 +303,38 @@ For each run, the scripts generate:
 
 ## Space for Screenshots / Plots
 
-### Multidimensional baseline plot
+Replace the placeholder Cloudinary URLs below with your actual hosted image links.
+
+Cloudinary format example:
 
 ```text
-[Insert plot from plots/instance_3_baseline_seed_42/baseline.png]
+https://res.cloudinary.com/<cloud-name>/image/upload/<public-id>.png
 ```
+
+### Multidimensional baseline plot
+
+[![Multidimensional baseline plot](https://res.cloudinary.com/dhntips7e/image/upload/v1774204548/baseline_elaj61.png)](https://res.cloudinary.com/dhntips7e/image/upload/v1774204548/baseline_elaj61.png)
+
+Source file:
+`plots/instance_3_baseline_seed_42/baseline.png`
 
 ### Multidimensional comparison plot
 
-```text
-[Insert plot from plots/instance_3_compare_seed_42/comparison.png]
-```
+[![Multidimensional comparison plot](https://res.cloudinary.com/dhntips7e/image/upload/v1774204527/comparison_jagn3x.png)](https://res.cloudinary.com/dhntips7e/image/upload/v1774204527/comparison_jagn3x.png)
+
+Source file:
+`plots/instance_3_compare_seed_42/comparison.png`
 
 ### Single-constraint baseline plot
 
-```text
-[Insert plot from plots_single/instance_0_baseline_seed_42/baseline.png]
-```
+[![Single-constraint baseline plot](https://res.cloudinary.com/dhntips7e/image/upload/v1774204675/baseline_ldmx5f.png)](https://res.cloudinary.com/dhntips7e/image/upload/v1774204675/baseline_ldmx5f.png)
+
+Source file:
+`plots_single/instance_0_baseline_seed_42/baseline.png`
 
 ### Single-constraint comparison plot
 
-```text
-[Insert plot from plots_single/instance_0_compare_seed_42/comparison.png]
-```
+[![Single-constraint comparison plot](https://res.cloudinary.com/dhntips7e/image/upload/v1774204676/comparison_xlmmtk.png)](https://res.cloudinary.com/dhntips7e/image/upload/v1774204676/comparison_xlmmtk.png)
+
+Source file:
+`plots_single/instance_0_compare_seed_42/comparison.png`
