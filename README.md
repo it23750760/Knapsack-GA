@@ -1,50 +1,72 @@
-# Genetic Algorithm for Multidimensional Knapsack using DEAP
+# Knapsack Genetic Algorithms with DEAP
 
-## Problem Introduction
+## Overview
 
-This project solves a **multidimensional knapsack problem (MKP)** using a **Genetic Algorithm (GA)** implemented with **DEAP**.
+This project contains two DEAP-based Genetic Algorithm implementations for the knapsack problem:
 
-In the knapsack problem, each item has:
-- a profit
-- one or more weights
+- [MKnap-GA.py](/Users/realdulain/Documents/SLIIT/Y3S1/IS%20-%20SE3062%20-%20Intelligent%20Systems/Labs/06/Knapsack/MKnap-GA.py)
+  - solves the **multidimensional knapsack problem**
+  - uses the dataset [mknap1.txt](/Users/realdulain/Documents/SLIIT/Y3S1/IS%20-%20SE3062%20-%20Intelligent%20Systems/Labs/06/Knapsack/mknap1.txt)
+  - supports multiple constraints per item
 
-The goal is to choose a subset of items that:
-- maximizes total profit
-- does not exceed the capacity limits
+- [Knapsack-GA.py](/Users/realdulain/Documents/SLIIT/Y3S1/IS%20-%20SE3062%20-%20Intelligent%20Systems/Labs/06/Knapsack/Knapsack-GA.py)
+  - solves the **single-constraint 0/1 knapsack problem**
+  - uses the dataset [knap1.txt](/Users/realdulain/Documents/SLIIT/Y3S1/IS%20-%20SE3062%20-%20Intelligent%20Systems/Labs/06/Knapsack/knap1.txt)
+  - uses one weight per item and one capacity value
 
-In this dataset, the problem is **multidimensional**, which means each item consumes resources across multiple constraints instead of just one. A candidate solution is represented as a binary chromosome:
-- `1` means the item is selected
-- `0` means the item is not selected
+Both programs:
+- use binary chromosomes
+- use DEAP for the GA implementation
+- support baseline and comparison runs
+- generate PNG plots automatically
 
-The GA searches for good solutions by repeatedly applying:
-- selection
-- crossover
-- mutation
-- elitism
+## The Two Datasets
 
-The solver also uses a **penalty-based fitness function** so infeasible solutions receive a lower fitness score.
+### 1. `mknap1.txt` — Multidimensional knapsack
+
+This dataset contains **multiple constraints** for each instance.
+
+Each instance includes:
+- number of items
+- number of constraints
+- known optimal value
+- profit values
+- one weight row for each constraint
+- one capacity value for each constraint
+
+This dataset is used by [MKnap-GA.py](/Users/realdulain/Documents/SLIIT/Y3S1/IS%20-%20SE3062%20-%20Intelligent%20Systems/Labs/06/Knapsack/MKnap-GA.py).
+
+### 2. `knap1.txt` — Single-constraint knapsack
+
+This dataset contains **only one constraint**.
+
+Each instance includes:
+- number of items
+- one constraint
+- known optimal value
+- profit values
+- a single weight row
+- a single capacity value
+
+This dataset is used by [Knapsack-GA.py](/Users/realdulain/Documents/SLIIT/Y3S1/IS%20-%20SE3062%20-%20Intelligent%20Systems/Labs/06/Knapsack/Knapsack-GA.py).
 
 ## Project Files
 
-- [ga_mknap.py](/Users/realdulain/Documents/SLIIT/Y3S1/IS%20-%20SE3062%20-%20Intelligent%20Systems/Labs/06/Knapsack/ga_mknap.py): Single Python file containing:
-  - dataset loader
-  - DEAP GA implementation
-  - experiment runner
-  - plotting functions
-- [mknap1.txt](/Users/realdulain/Documents/SLIIT/Y3S1/IS%20-%20SE3062%20-%20Intelligent%20Systems/Labs/06/Knapsack/mknap1.txt): Dataset file
-- [Practical 06.html](/Users/realdulain/Documents/SLIIT/Y3S1/IS%20-%20SE3062%20-%20Intelligent%20Systems/Labs/06/Knapsack/Practical%2006.html): Practical sheet
+- [MKnap-GA.py](/Users/realdulain/Documents/SLIIT/Y3S1/IS%20-%20SE3062%20-%20Intelligent%20Systems/Labs/06/Knapsack/MKnap-GA.py): multidimensional knapsack GA
+- [Knapsack-GA.py](/Users/realdulain/Documents/SLIIT/Y3S1/IS%20-%20SE3062%20-%20Intelligent%20Systems/Labs/06/Knapsack/Knapsack-GA.py): single-constraint knapsack GA
+- [mknap1.txt](/Users/realdulain/Documents/SLIIT/Y3S1/IS%20-%20SE3062%20-%20Intelligent%20Systems/Labs/06/Knapsack/mknap1.txt): multidimensional dataset
+- [knap1.txt](/Users/realdulain/Documents/SLIIT/Y3S1/IS%20-%20SE3062%20-%20Intelligent%20Systems/Labs/06/Knapsack/knap1.txt): single-constraint dataset
+- [Practical 06.html](/Users/realdulain/Documents/SLIIT/Y3S1/IS%20-%20SE3062%20-%20Intelligent%20Systems/Labs/06/Knapsack/Practical%2006.html): practical sheet
 
 ## Requirements
 
-- Python 3.10 or newer is recommended
+- Python 3.10 or newer
 - `deap`
 - `matplotlib`
 
-## Setup Instructions
+## Setup
 
 ### 1. Open the project folder
-
-Make sure your terminal is inside the project directory:
 
 ```bash
 cd "/path/to/Knapsack"
@@ -92,279 +114,215 @@ pip install deap matplotlib
 pip install deap matplotlib
 ```
 
-## Dataset Notes
+## Running the Multidimensional Version
 
-The project uses `mknap1.txt`, which contains multiple MKP instances.
+Use [MKnap-GA.py](/Users/realdulain/Documents/SLIIT/Y3S1/IS%20-%20SE3062%20-%20Intelligent%20Systems/Labs/06/Knapsack/MKnap-GA.py) with [mknap1.txt](/Users/realdulain/Documents/SLIIT/Y3S1/IS%20-%20SE3062%20-%20Intelligent%20Systems/Labs/06/Knapsack/mknap1.txt).
 
-Each instance includes:
-- number of items
-- number of constraints
-- known optimal value
-- profits of all items
-- weight rows for each constraint
-- capacity values
+### Baseline run
 
-The loader inside `ga_mknap.py` reads the file using whitespace splitting, so line breaks inside the dataset do not affect parsing.
+#### Windows
 
-## How the Solution Works
+```powershell
+python MKnap-GA.py --dataset mknap1.txt --instance 3 --mode baseline
+```
 
-### Encoding
+#### macOS
 
-Each chromosome is a list of `0`s and `1`s.
+```bash
+python MKnap-GA.py --dataset mknap1.txt --instance 3 --mode baseline
+```
 
-Example:
+### Comparison run
+
+#### Windows
+
+```powershell
+python MKnap-GA.py --dataset mknap1.txt --instance 3 --mode compare
+```
+
+#### macOS
+
+```bash
+python MKnap-GA.py --dataset mknap1.txt --instance 3 --mode compare
+```
+
+### PNG output folder for the multidimensional version
+
+The multidimensional script saves PNG files under:
 
 ```text
-[1, 0, 1, 1, 0]
+plots/
 ```
 
-This means:
-- item 1 selected
-- item 2 not selected
-- item 3 selected
-- item 4 selected
-- item 5 not selected
+Example run folders:
 
-### Fitness Function
+```text
+plots/instance_3_baseline_seed_42/
+plots/instance_3_compare_seed_42/
+```
 
-The fitness is based on:
-- total profit
-- total overflow across all constraints
+Inside a comparison folder you will typically see:
 
-If a solution violates one or more capacity constraints, a penalty is subtracted from its profit.
+```text
+baseline.png
+tournament_k_2.png
+tournament_k_4.png
+roulette.png
+rank.png
+crossover_one_point.png
+crossover_uniform.png
+mutation_0_01.png
+mutation_0_05.png
+mutation_0_10.png
+comparison.png
+```
 
-### Genetic Operators
+## Running the Single-Constraint Version
 
-The implementation supports:
-- tournament selection
-- roulette selection
-- rank selection
-- one-point crossover
-- two-point crossover
-- uniform crossover
-- bit-flip mutation
-- elitism
+Use [Knapsack-GA.py](/Users/realdulain/Documents/SLIIT/Y3S1/IS%20-%20SE3062%20-%20Intelligent%20Systems/Labs/06/Knapsack/Knapsack-GA.py) with [knap1.txt](/Users/realdulain/Documents/SLIIT/Y3S1/IS%20-%20SE3062%20-%20Intelligent%20Systems/Labs/06/Knapsack/knap1.txt).
 
-## Running the Program
-
-### Run the baseline experiment
+### Baseline run
 
 #### Windows
 
 ```powershell
-python ga_mknap.py --instance 3 --mode baseline
+python Knapsack-GA.py --dataset knap1.txt --instance 0 --mode baseline
 ```
 
 #### macOS
 
 ```bash
-python ga_mknap.py --instance 3 --mode baseline
+python Knapsack-GA.py --dataset knap1.txt --instance 0 --mode baseline
 ```
 
-### Run all comparison experiments
+### Comparison run
 
 #### Windows
 
 ```powershell
-python ga_mknap.py --instance 3 --mode compare
+python Knapsack-GA.py --dataset knap1.txt --instance 0 --mode compare
 ```
 
 #### macOS
 
 ```bash
-python ga_mknap.py --instance 3 --mode compare
+python Knapsack-GA.py --dataset knap1.txt --instance 0 --mode compare
 ```
 
-## Command Arguments
+### PNG output folder for the single-constraint version
+
+The single-constraint script saves PNG files under:
+
+```text
+plots_single/
+```
+
+Example run folders:
+
+```text
+plots_single/instance_0_baseline_seed_42/
+plots_single/instance_0_compare_seed_42/
+```
+
+Inside a comparison folder you will typically see:
+
+```text
+baseline.png
+tournament_k_2.png
+tournament_k_4.png
+roulette.png
+rank.png
+crossover_one_point.png
+crossover_uniform.png
+mutation_0_01.png
+mutation_0_05.png
+mutation_0_10.png
+comparison.png
+```
+
+## Common Command Arguments
+
+Both scripts support:
 
 - `--dataset`
   - path to the dataset file
-  - default: `mknap1.txt`
 
 - `--instance`
-  - zero-based index of the instance inside the dataset
-  - default: `3`
+  - zero-based index of the instance in the dataset
 
 - `--mode`
-  - `baseline` runs the default GA setup
-  - `compare` runs all configured operator and mutation comparisons
+  - `baseline` for one run using the default settings
+  - `compare` for running the operator and mutation comparisons
 
 - `--seed`
   - random seed for reproducibility
   - default: `42`
 
-## Example Commands
+The single-constraint script also supports:
 
-Run baseline on instance 3:
+- `--output`
+  - custom root folder for generated PNG files
+  - default: `plots_single`
 
-```bash
-python ga_mknap.py --instance 3 --mode baseline
-```
+## What the Scripts Do
 
-Run comparisons on instance 4:
+Each script:
+- loads the selected dataset instance
+- creates a binary GA representation
+- evaluates each solution using a penalty-based fitness function
+- runs the baseline or comparison experiments
+- saves plots as PNG files
 
-```bash
-python ga_mknap.py --instance 4 --mode compare
-```
+## Plot Types
 
-Run with a different random seed:
+For each run, the scripts generate:
 
-```bash
-python ga_mknap.py --instance 3 --mode compare --seed 7
-```
+- an individual plot for each variant
+  - best fitness curve
+  - average fitness curve
+  - optimal reference line
 
-## Output Files
-
-The program saves plots into a separate `plots` directory.
-
-Each program run gets its own subfolder:
-
-```text
-plots/
-  instance_3_baseline_seed_42/
-    baseline.png
-  instance_3_compare_seed_42/
-    baseline.png
-    tournament_k_2.png
-    tournament_k_4.png
-    roulette.png
-    rank.png
-    crossover_one_point.png
-    crossover_uniform.png
-    mutation_0_01.png
-    mutation_0_05.png
-    mutation_0_10.png
-    comparison.png
-```
-
-### Plot Types
-
-- Individual run plots:
-  - best fitness over generations
-  - average fitness over generations
-  - dashed horizontal line for known optimal value
-
-- Comparison plot:
-  - best fitness curve of every variant on one graph
-
-## Recommended Workflow for the Practical
-
-1. Create and activate the virtual environment.
-2. Install `deap` and `matplotlib`.
-3. Run the baseline experiment.
-4. Check the baseline output and generated plot.
-5. Run the comparison experiment.
-6. Use the generated PNG files for analysis.
-7. Compare:
-   - selection methods
-   - crossover methods
-   - mutation rates
-8. Write the report using:
-   - your settings
-   - output values
-   - generated graphs
-   - observations about convergence and solution quality
-
-## Suggested Report Structure
-
-### 1. Introduction
-
-Briefly explain:
-- what the knapsack problem is
-- what makes this dataset multidimensional
-- why a genetic algorithm is suitable
-
-### 2. Representation and Fitness
-
-Describe:
-- binary chromosome representation
-- how profit is calculated
-- how penalties are applied for constraint violations
-
-### 3. Baseline Configuration
-
-Include:
-- tournament selection with `k=3`
-- 2-point crossover
-- mutation probability `0.02`
-- population size `150`
-- `200` generations
-- elitism `2`
-- random seed used
-
-### 4. Experimental Comparison
-
-Discuss:
-- selection variants
-- crossover variants
-- mutation-rate variants
-
-### 5. Results and Discussion
-
-Explain:
-- which variant performed best
-- which converged faster
-- whether the known optimum was reached
-- what happened to average fitness
-- how diversity and selection pressure affected performance
-
-## Space for Screenshots / Plots
-
-### Baseline Plot
-
-Insert baseline plot here:
-
-```text
-[Add screenshot or baseline.png here]
-```
-
-### Comparison Plot
-
-Insert comparison plot here:
-
-```text
-[Add screenshot or comparison.png here]
-```
-
-### Additional Variant Plots
-
-Insert any useful extra plots here:
-
-```text
-[Add crossover or mutation plots here]
-```
+- one `comparison.png`
+  - compares the best-fitness curves of all variants on one graph
 
 ## Notes
 
-- The dataset contains wrapped lines in some places. This is normal and does not break the loader.
-- The known optimal value in the dataset is used only as a reference line in the plots.
-- Some average fitness curves may become very negative because infeasible solutions are heavily penalized.
+- `mknap1.txt` is the multidimensional dataset.
+- `knap1.txt` is the single-constraint dataset.
+- The dataset loaders use whitespace splitting, so wrapped lines in the text files do not cause parsing issues.
+- Very negative average fitness values can happen because infeasible solutions receive heavy penalties.
 
-## Troubleshooting
+## Suggested Practical Workflow
 
-### `ModuleNotFoundError: No module named 'deap'`
+1. Create and activate the virtual environment.
+2. Install `deap` and `matplotlib`.
+3. Run the multidimensional version if you want to work directly with `mknap1.txt`.
+4. Run the single-constraint version if you want the simpler 0/1 formulation.
+5. Use the generated PNG files from `plots/` or `plots_single/` in your report.
+6. Compare operator behavior and discuss convergence.
 
-Install DEAP:
+## Space for Screenshots / Plots
 
-```bash
-pip install deap
+### Multidimensional baseline plot
+
+```text
+[Insert plot from plots/instance_3_baseline_seed_42/baseline.png]
 ```
 
-### `ModuleNotFoundError: No module named 'matplotlib'`
+### Multidimensional comparison plot
 
-Install matplotlib:
-
-```bash
-pip install matplotlib
+```text
+[Insert plot from plots/instance_3_compare_seed_42/comparison.png]
 ```
 
-### No plots are generated
+### Single-constraint baseline plot
 
-Check that:
-- `matplotlib` is installed in the active virtual environment
-- the script completed successfully
-- the `plots` folder was created in the project directory
+```text
+[Insert plot from plots_single/instance_0_baseline_seed_42/baseline.png]
+```
 
-## Academic Use Note
+### Single-constraint comparison plot
 
-This code is intended to support the practical implementation and report. You should still explain the method, settings, and results in your own words when preparing the submission.
+```text
+[Insert plot from plots_single/instance_0_compare_seed_42/comparison.png]
+```
