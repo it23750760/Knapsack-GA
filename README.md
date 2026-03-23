@@ -301,15 +301,7 @@ For each run, the scripts generate:
 5. Use the generated PNG files from `plots/` or `plots_single/` in your report.
 6. Compare operator behavior and discuss convergence.
 
-## Space for Screenshots / Plots
-
-Replace the placeholder Cloudinary URLs below with your actual hosted image links.
-
-Cloudinary format example:
-
-```text
-https://res.cloudinary.com/<cloud-name>/image/upload/<public-id>.png
-```
+## Example Plots
 
 ### Multidimensional baseline plot
 
